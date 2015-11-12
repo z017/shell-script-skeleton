@@ -4,20 +4,21 @@
 
 Shell Script Skeleton is used as a base for writing various utility scripts.
 
-[Project Web](http://jeremiaslongo.com/skeletons/shell-script-skeleton) · [Twitter](http://twitter.com/z017) . [Email](mailto:jeremias@pikel.org)
+[Project Web](http://jeremiaslongo.com/skeletons/shell-script) · [Twitter](http://twitter.com/z017) . [Email](mailto:jeremias@pikel.org)
 
 ## Features
+
 * Simple structure for building shell scripts fast
 * Shell Option Parsing
-Supporting both single letters like -p and also long options like --port
+    * Supporting both single letters like -p and also long options like --port
 * Help Message Functionality
-With command 'help' and options -h or --help
+    * With command 'help' and options -h or --help
 * Version Functionality
-With command 'version' and options -v or --version
+    * With command 'version' and options -v or --version
 * Standard Verbosity Levels: Debug, Info, Warning, Error, Fatal, None
-With option --verbosity <level>
+    * With option --verbosity <level>
 * Quiet Mode
-With options -q or --quiet
+    * With options -q or --quiet
 * Useful functions like: required_tools, message and err.
 
 ## Getting Started
@@ -73,12 +74,12 @@ $ chmod +x script
 
 # Guidelines
 
-- [File Header](##file-header)
-- [Constants](##constants)
-- [Variables](##variables)
-- [Functions](##Functions)
-- [Main Function](##main-function)
-- [Formatting](##formatting)
+- [File Header](#file-header)
+- [Constants](#constants)
+- [Variables](#variables)
+- [Functions](#functions)
+- [Main Function](#main-function)
+- [Formatting](#formatting)
 
 ## File Header
 

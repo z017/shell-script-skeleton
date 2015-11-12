@@ -151,14 +151,14 @@ function main() {
         [[ $opt == -- ]] && shift && break
         if [[ $opt == --?* ]]; then
           opt=${opt#--}
-      		shift
+          shift
 
-      		# Argument to option ?
+          # Argument to option ?
           OPTARG=
           local has_arg=0
-      		[[ $opt == *=* ]] && OPTARG=${opt#*=} && opt=${opt%=$OPTARG} && has_arg=1
+          [[ $opt == *=* ]] && OPTARG=${opt#*=} && opt=${opt%=$OPTARG} && has_arg=1
 
-      		# Check if known option and if it has an argument if it must:
+          # Check if known option and if it has an argument if it must:
           local state=0
           for option in "${LONG_OPTS[@]}"; do
             [[ "$option" == "$opt" ]] && state=1 && break
@@ -187,9 +187,9 @@ function main() {
       verbosity)    verbosity "$OPTARG" ;;
       # Errors
       ::)	err "Unexpected argument to option '$OPTARG'" ;;
-    	:)	err "Missing argument to option '$OPTARG'" ;;
-    	\?)	err "Unknown option '$OPTARG'" ;;
-    	*)	err "Internal script error, unmatched option '$opt'" ;;
+      :)	err "Missing argument to option '$OPTARG'" ;;
+      \?)	err "Unknown option '$OPTARG'" ;;
+      *)	err "Internal script error, unmatched option '$opt'" ;;
     esac
   done
   shift $((OPTIND-1))
