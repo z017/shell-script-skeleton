@@ -66,12 +66,30 @@ $ chmod +x skeleton
 
 # Guidelines
 
+- [File Extension](#file-extension)
 - [File Header](#file-header)
 - [Constants](#constants)
 - [Variables](#variables)
 - [Functions](#functions)
 - [Main Function](#main-function)
 - [Formatting](#formatting)
+
+## File Extension
+
+Executables like `skeleton` should have no extension (strongly preferred) or
+a .sh extension.
+
+Libraries like `common.sh` must have a .sh extension and should not be
+executable.
+
+It is not necessary to know what language a program is written in when executing
+it and shell doesn't require an extension so we prefer not to use one for
+executables.
+
+However, for libraries it's important to know what language it is and sometimes
+there's a need to have similar libraries in different languages. This allows
+library files with identical purposes but different languages to be identically
+named except for the language-specific suffix.
 
 ## File Header
 
