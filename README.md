@@ -15,11 +15,7 @@ Shell Script Skeleton is used as a base for writing various utility scripts.
     * With command 'help' and options -h or --help
 * Version Functionality
     * With command 'version' and options -v or --version
-* Standard Verbosity Levels: Debug, Info, Warning, Error, Fatal, None
-    * With option --verbosity <level>
-* Quiet Mode
-    * With options -q or --quiet
-* Useful functions like: required_tools, message and err.
+* Useful functions like: required, ech and err.
 
 ## Getting Started
 
@@ -33,16 +29,12 @@ Afterwards, run the script:
 
 ```
 $ cd shell-script-skeleton
-$ ./script.sh
+$ ./skeleton
 
 USAGE:
-  script.sh [options] <command>
+  skeleton [options] <command>
 
   OPTIONS:
-    --quiet, -q             Disable all interactive prompts.
-    --verbosity <level>     Override the default verbosity for the command. Must
-                            be a standard logging verbosity level: [debug, info,
-                            warning, error, fatal, none] (Default: [warning])
     --help, -h              Alias help command
     --version, -v           Alias version command
     --                      Denotes the end of the options.  Arguments after this
@@ -58,13 +50,13 @@ USAGE:
 If you get an error like this one:
 
 ```sh
--bash: ./script.sh: Permission denied
+-bash: ./skeleton: Permission denied
 ```
 
 Remember to make the script executable:
 
 ```sh
-$ chmod +x script
+$ chmod +x skeleton
 ```
 
 ## Inspiration
@@ -93,8 +85,6 @@ A copyright notice and author information are optional.
 #
 # Generic Shell Script Skeleton.
 # Copyright (c) 2015 - Jeremias Longo <jeremias@pikel.org>
-#
-# Build with Shell Script Skeleton <https://github.com/z017/shell-script-skeleton>
 ```
 
 ## Constants

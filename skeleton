@@ -1,21 +1,10 @@
-#!/bin/bash
+#!/bin/bash -e
 #
 # Generic Shell Script Skeleton.
 # Copyright (c) 2015 - Jeremias Longo <jeremias@pikel.org>
-#
-# Build with Shell Script Skeleton v0.0.1 <https://github.com/z017/shell-script-skeleton>
 
-#######################################
-# SHELL OPTIONS
-#######################################
-
-# Exit immediately if a pipeline returns a non-zero status
-set -o errexit
-
-# The return value of a pipeline is the value of the last (rightmost) command to
-# exit with a non-zero status, or zero if all commands in the pipeline exit
-# successfully.
-set -o pipefail
+# Import common utilities
+source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 
 #######################################
 # CONSTANTS & VARIABLES
@@ -29,67 +18,14 @@ readonly REQUIRED_TOOLS=()
 
 # Long Options. To expect an argument for an option, just place a : (colon)
 # after the proper option flag.
-readonly LONG_OPTS=(help version verbosity: quiet)
+readonly LONG_OPTS=(help version)
 
 # Short Options. To expect an argument for an option, just place a : (colon)
 # after the proper option flag.
-readonly SHORT_OPTS=hvq
+readonly SHORT_OPTS=hv
 
 # Script name
 readonly SCRIPT_NAME=${0##*/}
-
-# Script Directory
-readonly SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-
-# Verbose Levels
-readonly VERBOSE_LEVELS=(none fatal error warning info debug)
-
-# Level Colors
-readonly LEVEL_COLORS=(39, 31, 31, 33, 32, 36)
-
-# Defaults Verbose Level - 0 none, 1 fatal, 2 error, 3 warning, 4 info, 5 debug
-readonly VERBOSE_DEFAULT=3
-
-# Current verbose level
-declare -i verbose_level="$VERBOSE_DEFAULT"
-
-# Quiet Mode
-QUIET=false
-
-#######################################
-# UTILS FUNCTIONS
-#######################################
-
-# Print out fatal error messages to STDERR and exit 2.
-function err() {
-  local level=1
-  [[ $verbose_level -ge $level ]] \
-    && echo -e "\033[0;${LEVEL_COLORS[$level]}mFATAL: $@\033[0m" >&2
-  exit 2
-}
-
-# Print out messages with given verbose level to STDERR.
-function message() {
-  local level=4
-  if [[ $# -gt 1 ]]; then
-    for lvl in "${!VERBOSE_LEVELS[@]}"; do
-      [[ "${VERBOSE_LEVELS[$lvl]}" = "$1" ]] && level="${lvl}" && break
-    done
-    shift
-  fi
-  [[ $level = 0 || $level -gt $verbose_level ]] && return
-  tag=$(echo ${VERBOSE_LEVELS[$level]} | tr "a-z" "A-Z" )
-  echo -e "\033[0;${LEVEL_COLORS[$level]}m$tag: $@\033[0m" >&2
-}
-
-# Set verbose level index. Must be a standard logging verbosity level:
-# debug, info, warning, error, fatal, none.
-function verbosity() {
-  for level in "${!VERBOSE_LEVELS[@]}"; do
-    [[ "${VERBOSE_LEVELS[$level]}" = "$1" ]] && verbose_level="${level}" && return
-  done
-  message warning "Invalid Verbosity Level '$1'"
-}
 
 
 #######################################
@@ -102,10 +38,6 @@ USAGE:
   $SCRIPT_NAME [options] <command>
 
 OPTIONS:
-  --quiet, -q             Disable all interactive prompts.
-  --verbosity <level>     Override the default verbosity for the command. Must
-                          be a standard logging verbosity level: [debug, info,
-                          warning, error, fatal, none] (Default: [warning])
   --help, -h              Alias help command
   --version, -v           Alias version command
   --                      Denotes the end of the options.  Arguments after this
@@ -141,21 +73,17 @@ function default_command() {
 #
 #######################################
 function main() {
-  # Shows an error if required tools are not installed.
-  for tool in "${REQUIRED_TOOLS[@]}"; do
-  	[[ ! $(which $tool) ]] && err "$tool is required for running this script. Please install $tool and try again."
-  done
+  # Required tools
+  required $REQUIRED_TOOLS
 
   # Parse options
   while [[ $# -ge $OPTIND ]] && eval opt=\${$OPTIND} || break
         [[ $opt == -- ]] && shift && break
         if [[ $opt == --?* ]]; then
-          opt=${opt#--}
-          shift
+          opt=${opt#--}; shift
 
           # Argument to option ?
-          OPTARG=
-          local has_arg=0
+          OPTARG=;local has_arg=0
           [[ $opt == *=* ]] && OPTARG=${opt#*=} && opt=${opt%=$OPTARG} && has_arg=1
 
           # Check if known option and if it has an argument if it must:
@@ -175,25 +103,22 @@ function main() {
 
           # for the while
           true
-      	else
+        else
           getopts ":$SHORT_OPTS" opt
-      	fi
+        fi
   do
     case "$opt" in
       # List of options
       v|version)    version_command; exit 0; ;;
       h|help)       help_command ;;
-      q|quiet)      QUIET=true ;;
-      verbosity)    verbosity "$OPTARG" ;;
       # Errors
-      ::)	err "Unexpected argument to option '$OPTARG'" ;;
-      :)	err "Missing argument to option '$OPTARG'" ;;
-      \?)	err "Unknown option '$OPTARG'" ;;
-      *)	err "Internal script error, unmatched option '$opt'" ;;
+      ::)	err "Unexpected argument to option '$OPTARG'"; exit 2; ;;
+      :)	err "Missing argument to option '$OPTARG'"; exit 2; ;;
+      \?)	err "Unknown option '$OPTARG'"; exit 2; ;;
+      *)	err "Internal script error, unmatched option '$opt'"; exit 2; ;;
     esac
   done
   shift $((OPTIND-1))
-  readonly QUIET
 
   # No more arguments -> call default command
   [[ -z "$1" ]] && default_command
@@ -211,7 +136,7 @@ function main() {
     version)  version_command ;;
 
     # Unknown command
-    *)        err "Unknown command '$command'" ;;
+    *)  err "Unknown command '$command'"; exit 2; ;;
   esac
 }
 #######################################

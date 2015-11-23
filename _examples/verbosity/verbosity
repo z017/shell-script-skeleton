@@ -1,0 +1,165 @@
+#!/bin/bash -e
+#
+# Generic Shell Script Skeleton.
+# Example: Verbosity
+# Copyright (c) 2015 - Jeremias Longo <jeremias@pikel.org>
+
+# Import common utilities
+source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
+
+#######################################
+# CONSTANTS & VARIABLES
+#######################################
+
+# Script version
+readonly VERSION=0.0.1
+
+# List of required tools, example: REQUIRED_TOOLS=(git ssh)
+readonly REQUIRED_TOOLS=()
+
+# Long Options. To expect an argument for an option, just place a : (colon)
+# after the proper option flag.
+readonly LONG_OPTS=(help version verbosity:)
+
+# Short Options. To expect an argument for an option, just place a : (colon)
+# after the proper option flag.
+readonly SHORT_OPTS=hv
+
+# Script name
+readonly SCRIPT_NAME=${0##*/}
+
+
+#######################################
+# help command
+#######################################
+function help_command() {
+  cat <<END;
+
+USAGE:
+  $SCRIPT_NAME [options] <command>
+
+OPTIONS:
+  --verbosity <level>     Override the default verbosity for the command. Must
+                          be a standard logging verbosity level: [debug, info,
+                          warning, error, fatal, none] (Default: [warning])
+  --help, -h              Alias help command
+  --version, -v           Alias version command
+  --                      Denotes the end of the options.  Arguments after this
+                          will be handled as parameters even if they start with
+                          a '-'.
+
+COMMANDS:
+  help                    Display detailed help
+  version                 Print version information.
+
+END
+  exit 1
+}
+
+#######################################
+# version command
+#######################################
+function version_command() {
+  echo "$SCRIPT_NAME version $VERSION"
+}
+
+#######################################
+# version command
+#######################################
+function test_command() {
+  echo "Test Verbosity Messages:"
+  ech fatal "fatal verbosity"
+  ech error "error verbosity"
+  ech warning "warning verbosity"
+  ech info "info verbosity"
+  ech debug "debug verbosity"
+}
+
+#######################################
+# default command
+#######################################
+function default_command() {
+  # set default command here
+  test_command
+}
+
+#######################################
+#
+# MAIN
+#
+#######################################
+function main() {
+  # Required tools
+  required $REQUIRED_TOOLS
+
+  # Parse options
+  while [[ $# -ge $OPTIND ]] && eval opt=\${$OPTIND} || break
+        [[ $opt == -- ]] && shift && break
+        if [[ $opt == --?* ]]; then
+          opt=${opt#--}; shift
+
+          # Argument to option ?
+          OPTARG=;local has_arg=0
+          [[ $opt == *=* ]] && OPTARG=${opt#*=} && opt=${opt%=$OPTARG} && has_arg=1
+
+          # Check if known option and if it has an argument if it must:
+          local state=0
+          for option in "${LONG_OPTS[@]}"; do
+            [[ "$option" == "$opt" ]] && state=1 && break
+            [[ "${option%:}" == "$opt" ]] && state=2 && break
+          done
+          # Param not found
+          [[ $state = 0 ]] && OPTARG=$opt && opt='?'
+          # Param with no args, has args
+          [[ $state = 1 && $has_arg = 1 ]] && OPTARG=$opt && opt=::
+          # Param with args, has no args
+          if [[ $state = 2 && $has_arg = 0 ]]; then
+            [[ $# -ge $OPTIND ]] && eval OPTARG=\${$OPTIND} && shift || { OPTARG=$opt; opt=:; }
+          fi
+
+          # for the while
+          true
+        else
+          getopts ":$SHORT_OPTS" opt
+        fi
+  do
+    case "$opt" in
+      # List of options
+      v|version)    version_command; exit 0; ;;
+      h|help)       help_command ;;
+      verbosity)    verbosity "$OPTARG" ;;
+      # Errors
+      ::)	err "Unexpected argument to option '$OPTARG'"; exit 2; ;;
+      :)	err "Missing argument to option '$OPTARG'"; exit 2; ;;
+      \?)	err "Unknown option '$OPTARG'"; exit 2; ;;
+      *)	err "Internal script error, unmatched option '$opt'"; exit 2; ;;
+    esac
+  done
+  shift $((OPTIND-1))
+
+  # No more arguments -> call default command
+  [[ -z "$1" ]] && default_command
+
+  # Set command and arguments
+  command="$1" && shift
+  args="$@"
+
+  # Execute the command
+  case "$command" in
+    # help
+    help)     help_command ;;
+
+    # version
+    version)  version_command ;;
+
+    # test
+    test)     test_command ;;
+
+    # Unknown command
+    *)        err "Unknown command '$command'"; exit 2; ;;
+  esac
+}
+#######################################
+# Run the script
+#######################################
+main "$@"
