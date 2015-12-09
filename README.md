@@ -15,7 +15,9 @@ Shell Script Skeleton is used as a base for writing various utility scripts.
     * With command 'help' and options -h or --help
 * Version Functionality
     * With command 'version' and options -v or --version
-* Useful functions like: required, ech and err.
+* Print functions: ech and err
+* Required tools functionality
+* Parser functions for replace template variables `{{ VAR }}`
 
 ## Getting Started
 
@@ -37,6 +39,7 @@ USAGE:
   OPTIONS:
     --help, -h              Alias help command
     --version, -v           Alias version command
+    --force                 Don't ask for confirmation
     --                      Denotes the end of the options.  Arguments after this
                             will be handled as parameters even if they start with
                             a '-'.
