@@ -2,6 +2,8 @@
 #
 # Generic Shell Script Skeleton.
 # Copyright (c) 2015 - Jeremias Longo <jeremias@pikel.org>
+#
+# Built with shell-script-skeleton v0.0.3 <http://github.com/z017/shell-script-skeleton>
 
 # Import common utilities
 source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
