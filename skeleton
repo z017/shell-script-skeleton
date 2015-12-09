@@ -20,7 +20,7 @@ readonly REQUIRED_TOOLS=()
 
 # Long Options. To expect an argument for an option, just place a : (colon)
 # after the proper option flag.
-readonly LONG_OPTS=(help version)
+readonly LONG_OPTS=(help version force)
 
 # Short Options. To expect an argument for an option, just place a : (colon)
 # after the proper option flag.
