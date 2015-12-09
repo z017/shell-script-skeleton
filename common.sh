@@ -1,7 +1,7 @@
 #!/bin/bash -e
 #
 # Common utilities for scripts
-# Copyright (c) 2015 - Jeremias Longo <jeremias@pikel.org>
+# Copyright (c) {{ YEAR }} - {{ AUTHOR }} <{{ AUTHOR_EMAIL }}>
 #
 # Built with shell-script-skeleton v0.0.3 <http://github.com/z017/shell-script-skeleton>
 
