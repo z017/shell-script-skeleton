@@ -7,7 +7,7 @@
 source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 
 #######################################
-# CONSTANTS & VARIABLES
+# SCRIPT CONSTANTS & VARIABLES
 #######################################
 
 # Script version
@@ -27,6 +27,15 @@ readonly SHORT_OPTS=hv
 # Script name
 readonly SCRIPT_NAME=${0##*/}
 
+# Force flag
+declare FORCE=false
+
+#######################################
+# SCRIPT CONFIGURATION CONSTANTS
+#######################################
+
+# Put here configuration constants
+
 
 #######################################
 # help command
@@ -40,6 +49,7 @@ USAGE:
 OPTIONS:
   --help, -h              Alias help command
   --version, -v           Alias version command
+  --force                 Don't ask for confirmation
   --                      Denotes the end of the options.  Arguments after this
                           will be handled as parameters even if they start with
                           a '-'.
@@ -111,6 +121,7 @@ function main() {
       # List of options
       v|version)    version_command; exit 0; ;;
       h|help)       help_command ;;
+      force)        FORCE=true ;;
       # Errors
       ::)	err "Unexpected argument to option '$OPTARG'"; exit 2; ;;
       :)	err "Missing argument to option '$OPTARG'"; exit 2; ;;
@@ -118,6 +129,7 @@ function main() {
       *)	err "Internal script error, unmatched option '$opt'"; exit 2; ;;
     esac
   done
+  readonly FORCE
   shift $((OPTIND-1))
 
   # No more arguments -> call default command
