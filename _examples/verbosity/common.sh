@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env bash -e
 #
 # Common utilities for scripts
 # Copyright (c) 2015 - Jeremias Longo <jeremias@pikel.org>
