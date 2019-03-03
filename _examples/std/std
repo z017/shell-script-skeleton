@@ -1,15 +1,14 @@
 #!/usr/bin/env bash -e
 #
 # Generic Shell Script Skeleton.
-# Copyright (c) {{ YEAR }} - {{ AUTHOR }} <{{ AUTHOR_EMAIL }}>
-#
-# Built with shell-script-skeleton v0.0.3 <http://github.com/z017/shell-script-skeleton>
+# Example: STD
+# Copyright (c) 2019 - Honza Hommer <honza@hommer.cz>
 
 # Import common utilities
 source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 
 #######################################
-# SCRIPT CONSTANTS & VARIABLES
+# CONSTANTS & VARIABLES
 #######################################
 
 # Script version
@@ -20,24 +19,14 @@ readonly REQUIRED_TOOLS=()
 
 # Long Options. To expect an argument for an option, just place a : (colon)
 # after the proper option flag.
-readonly LONG_OPTS=(help version force)
+readonly LONG_OPTS=(help version verbosity: quiet quiet force-quiet)
 
 # Short Options. To expect an argument for an option, just place a : (colon)
 # after the proper option flag.
-readonly SHORT_OPTS=hv
+readonly SHORT_OPTS=hvqqQ
 
 # Script name
 readonly SCRIPT_NAME=${0##*/}
-
-# Force flag
-declare FORCE=false
-
-#######################################
-# SCRIPT CONFIGURATION CONSTANTS
-#######################################
-
-# Put here configuration constants
-
 
 #######################################
 # help command
@@ -49,9 +38,13 @@ USAGE:
   $SCRIPT_NAME [options] <command>
 
 OPTIONS:
+  --verbosity <level>     Override the default verbosity for the command. Must
+                          be a standard logging verbosity level: [debug, info,
+                          warning, error, fatal, none] (Default: [warning])
+  --quiet, -q             Print output to STDERR instead of STDOUT.
+  --force-quiet, -Q       Hide all output.
   --help, -h              Alias help command
   --version, -v           Alias version command
-  --force                 Don't ask for confirmation
   --                      Denotes the end of the options.  Arguments after this
                           will be handled as parameters even if they start with
                           a '-'.
@@ -72,11 +65,23 @@ function version_command() {
 }
 
 #######################################
+# version command
+#######################################
+function test_command() {
+  echo "Test Verbosity Messages:"
+  ech fatal "fatal verbosity"
+  ech error "error verbosity"
+  ech warning "warning verbosity"
+  ech info "info verbosity"
+  ech debug "debug verbosity"
+}
+
+#######################################
 # default command
 #######################################
 function default_command() {
   # set default command here
-  help_command
+  test_command
 }
 
 #######################################
@@ -123,7 +128,9 @@ function main() {
       # List of options
       v|version)    version_command; exit 0; ;;
       h|help)       help_command ;;
-      force)        FORCE=true ;;
+      verbosity)    verbosity "$OPTARG" ;;
+      q|quiet)      std ;;
+      force-quiet|Q) std none ;;
       # Errors
       ::)	err "Unexpected argument to option '$OPTARG'"; exit 2; ;;
       :)	err "Missing argument to option '$OPTARG'"; exit 2; ;;
@@ -131,7 +138,6 @@ function main() {
       *)	err "Internal script error, unmatched option '$opt'"; exit 2; ;;
     esac
   done
-  readonly FORCE
   shift $((OPTIND-1))
 
   # No more arguments -> call default command
@@ -149,8 +155,11 @@ function main() {
     # version
     version)  version_command ;;
 
+    # test
+    test)     test_command ;;
+
     # Unknown command
-    *)  err "Unknown command '$command'"; exit 2; ;;
+    *)        err "Unknown command '$command'"; exit 2; ;;
   esac
 }
 #######################################

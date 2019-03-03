@@ -102,7 +102,7 @@ overview of its contents.
 A copyright notice and author information are optional.
 
 ```sh
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Generic Shell Script Skeleton.
 # Copyright (c) 2015 - Jeremias Longo <jeremias@pikel.org>
