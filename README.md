@@ -4,20 +4,18 @@
 
 Shell Script Skeleton is used as a base for writing various utility scripts.
 
-[Project Web](http://jeremiaslongo.com/skeletons/shell-script) · [Twitter](http://twitter.com/z017) . [Email](mailto:jeremias@pikel.org)
-
 ## Features
 
-* Simple structure for building shell scripts fast
-* Shell Option Parsing
-    * Supporting both single letters like -p and also long options like --port
-* Help Message Functionality
-    * With command 'help' and options -h or --help
-* Version Functionality
-    * With command 'version' and options -v or --version
-* Print functions: ech and err
-* Required tools functionality
-* Parser functions for replace template variables `{{ VAR }}`
+- Simple structure for building shell scripts fast
+- Shell Option Parsing
+  - Supporting both single letters like -p and also long options like --port
+- Help Message Functionality
+  - With command 'help' and options -h or --help
+- Version Functionality
+  - With command 'version' and options -v or --version
+- Print functions: ech and err
+- Required tools functionality
+- Parser functions for replace template variables `{{ VAR }}`
 
 ## Getting Started
 
@@ -29,7 +27,7 @@ $ git clone git://github.com/z017/shell-script-skeleton.git
 
 Afterwards, run the script:
 
-```
+```sh
 $ cd shell-script-skeleton
 $ ./skeleton
 
@@ -69,7 +67,7 @@ $ chmod +x skeleton
 
 # Guidelines
 
-- [File Extension](#file-extension)
+- [Filenames](#filenames)
 - [File Header](#file-header)
 - [Constants](#constants)
 - [Variables](#variables)
@@ -77,22 +75,11 @@ $ chmod +x skeleton
 - [Main Function](#main-function)
 - [Formatting](#formatting)
 
-## File Extension
+## Filenames
 
-Executables like `skeleton` should have no extension (strongly preferred) or
-a .sh extension.
+All scripts must have `.sh` extension.
 
-Libraries like `common.sh` must have a .sh extension and should not be
-executable.
-
-It is not necessary to know what language a program is written in when executing
-it and shell doesn't require an extension so we prefer not to use one for
-executables.
-
-However, for libraries it's important to know what language it is and sometimes
-there's a need to have similar libraries in different languages. This allows
-library files with identical purposes but different languages to be identically
-named except for the language-specific suffix.
+Libraries like `_common.sh` must start with `_`.
 
 ## File Header
 
@@ -105,7 +92,7 @@ A copyright notice and author information are optional.
 #!/usr/bin/env bash
 #
 # Generic Shell Script Skeleton.
-# Copyright (c) 2015 - Jeremias Longo <jeremias@pikel.org>
+# Copyright (c) 2015 - Jeremias Longo <jeremiaslongo@gmail.com>
 ```
 
 ## Constants
@@ -243,8 +230,8 @@ command1 \
 ### Loops
 
 Loops in shell are a bit different, but we follow the same principles as with
-braces when declaring functions. That is: ; then and ; do should be on the same
-line as the if/for/while. else should be on its own line and closing statements
+braces when declaring functions. That is: `; then` and `; do` should be on the same
+line as the `if/for/while`. `else` should be on its own line and closing statements
 should be on their own line vertically aligned with the opening statement.
 
 ```sh
@@ -266,11 +253,11 @@ done
 
 ### Case statement
 
-The matching expressions are indented one level from the 'case' and 'esac'.
+The matching expressions are indented one level from the `case` and `esac`.
 Multiline actions are indented another level with the pattern on a line on its
-own, then the actions, then ;; also on a line of its own.
+own, then the actions, then `;;` also on a line of its own.
 In general, there is no need to quote match expressions. Pattern expressions
-should not be preceded by an open parenthesis. Avoid the ;& and ;;& notations.
+should not be preceded by an open parenthesis. Avoid the `;&` and `;;&` notations.
 
 ```sh
 case "${expression}" in
@@ -288,9 +275,9 @@ case "${expression}" in
 esac
 ```
 
-Simple commands may be put on the same line as the pattern and ;; as long as the
+Simple commands may be put on the same line as the pattern and `;;` as long as the
 expression remains readable. Use a space after the close parenthesis of the
-pattern and another before the ;;.
+pattern and another before the `;;`.
 This is often appropriate for single-letter option processing.
 
 ```sh
