@@ -62,8 +62,8 @@ $ chmod +x skeleton
 
 ## Inspiration
 
-* [Unix and Linux Tutorials](http://www.phcomp.co.uk/Tutorials/Unix-And-Linux/index.php)
-* [Google Shell Styleguide](https://google.github.io/styleguide/shell.xml)
+- [Google Shell Styleguide](https://google.github.io/styleguide/shellguide.html)
+- [Unix and Linux Tutorials](http://www.phcomp.co.uk/Tutorials/Unix-And-Linux/index.php)
 
 # Guidelines
 
@@ -83,7 +83,10 @@ Libraries like `_common.sh` must start with `_`.
 
 ## File Header
 
-It's recommended to start each file with a top-level comment including a brief
+Executables must start with `#!/usr/bin/env bash` and no flags. Use set to set shell options so that calling your script as `bash script_name.sh` does not break its functionality.
+Using bash as the shell scripting language gives us a consistent shell language that's installed on all our machines.
+
+Also, it's recommended to start each file with a top-level comment including a brief
 overview of its contents.
 
 A copyright notice and author information are optional.
