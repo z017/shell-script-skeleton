@@ -1,7 +1,7 @@
 #!/usr/bin/env bash -e
 #
 # Common utilities for scripts
-# Copyright (c) 2015 - Jeremias Longo <jeremias@pikel.org>
+# Copyright (c) 2019 - Honza Hommer <honza@hommer.cz>
 
 #######################################
 # CONSTANTS & VARIABLES
@@ -21,19 +21,35 @@ readonly VERBOSE_DEFAULT=5
 # Current verbose level
 declare -i verbose_level="$VERBOSE_DEFAULT"
 
+# Standard streams
+readonly STANDARD_STREAMS=(stdout stderr none)
+
+# Default standard stream
+readonly STANDARD_STREAM_DEFAULT=stdout
+
+# Current standard stream
+declare standard_stream="$STANDARD_STREAM_DEFAULT"
+
 #######################################
 # FUNCTIONS
 #######################################
 
 # Print out error messages to STDERR.
 function err() {
-  [[ $verbose_level -ge 1 ]] \
-    && echo -e "\033[0;${LEVEL_COLORS[1]}mERROR: $@\033[0m" >&2
+  local message
+  if [[ $verbose_level -ge 1 ]]; then
+    message="\033[0;${LEVEL_COLORS[1]}mERROR: $@\033[0m"
+    case "$standard_stream" in
+      stderr) echo -e "$message" >&2 ;;
+      stdout) echo -e "$message" ;;
+    esac
+  fi
 }
 
 # Print out messages with given verbose level to STDERR.
 function ech() {
   local level=4 # Default Info
+  local message
   if [[ $# -gt 1 ]]; then
     for lvl in "${!VERBOSE_LEVELS[@]}"; do
       [[ "${VERBOSE_LEVELS[$lvl]}" = "$1" ]] && level="${lvl}" && break
@@ -42,7 +58,11 @@ function ech() {
   fi
   [[ $level = 0 || $level -gt $verbose_level ]] && return
   tag=$(echo ${VERBOSE_LEVELS[$level]} | tr "a-z" "A-Z" )
-  echo -e "\033[0;${LEVEL_COLORS[$level]}m$tag: $@\033[0m" >&2
+  message="\033[0;${LEVEL_COLORS[$level]}m$tag: $@\033[0m"
+  case "$standard_stream" in
+    stderr) echo -e "$message" >&2 ;;
+    stdout) echo -e "$message" ;;
+  esac
 }
 
 # Set verbose level index. Must be a standard logging verbosity level:
@@ -52,6 +72,19 @@ function verbosity() {
     [[ "${VERBOSE_LEVELS[$level]}" = "$1" ]] && verbose_level="${level}" && return
   done
   ech warning "Invalid Verbosity Level '$1'"
+}
+
+# Set standard stream. Must be a standard stream:
+# stderr, stdout, none.
+function std() {
+  if [[ $# -eq 0 ]]; then
+    [ "$standard_stream" = "stdout" ] && std stderr || std none
+  else
+    for stream in "${!STANDARD_STREAMS[@]}"; do
+      [[ "${STANDARD_STREAMS[$stream]}" = "$1" ]] && standard_stream="$1" && return
+    done
+    ech warning "Invalid Standard Stream '$1'"
+  fi
 }
 
 # Shows an error if required tools are not installed.

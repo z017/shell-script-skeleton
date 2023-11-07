@@ -1,8 +1,8 @@
 #!/usr/bin/env bash -e
 #
 # Generic Shell Script Skeleton.
-# Example: Verbosity
-# Copyright (c) 2015 - Jeremias Longo <jeremias@pikel.org>
+# Example: STD
+# Copyright (c) 2019 - Honza Hommer <honza@hommer.cz>
 
 # Import common utilities
 source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
@@ -19,15 +19,14 @@ readonly REQUIRED_TOOLS=()
 
 # Long Options. To expect an argument for an option, just place a : (colon)
 # after the proper option flag.
-readonly LONG_OPTS=(help version verbosity:)
+readonly LONG_OPTS=(help version verbosity: quiet quiet force-quiet)
 
 # Short Options. To expect an argument for an option, just place a : (colon)
 # after the proper option flag.
-readonly SHORT_OPTS=hv
+readonly SHORT_OPTS=hvqqQ
 
 # Script name
 readonly SCRIPT_NAME=${0##*/}
-
 
 #######################################
 # help command
@@ -42,6 +41,8 @@ OPTIONS:
   --verbosity <level>     Override the default verbosity for the command. Must
                           be a standard logging verbosity level: [debug, info,
                           warning, error, fatal, none] (Default: [warning])
+  --quiet, -q             Print output to STDERR instead of STDOUT.
+  --force-quiet, -Q       Hide all output.
   --help, -h              Alias help command
   --version, -v           Alias version command
   --                      Denotes the end of the options.  Arguments after this
@@ -128,6 +129,8 @@ function main() {
       v|version)    version_command; exit 0; ;;
       h|help)       help_command ;;
       verbosity)    verbosity "$OPTARG" ;;
+      q|quiet)      std ;;
+      force-quiet|Q) std none ;;
       # Errors
       ::)	err "Unexpected argument to option '$OPTARG'"; exit 2; ;;
       :)	err "Missing argument to option '$OPTARG'"; exit 2; ;;
