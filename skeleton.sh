@@ -1,4 +1,4 @@
-#!/usr/bin/env bash -e
+#!/usr/bin/env bash
 #
 # Generic Shell Script Skeleton.
 # Copyright (c) {{ YEAR }} - {{ AUTHOR }} <{{ AUTHOR_EMAIL }}>

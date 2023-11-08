@@ -1,9 +1,12 @@
-#!/usr/bin/env bash -e
+#!/usr/bin/env bash
 #
 # Common utilities for scripts
 # Copyright (c) {{ YEAR }} - {{ AUTHOR }} <{{ AUTHOR_EMAIL }}>
 #
 # Built with shell-script-skeleton v0.0.3 <http://github.com/z017/shell-script-skeleton>
+
+# Bash strict mode
+set -Eeuo pipefail
 
 #######################################
 # FUNCTIONS
