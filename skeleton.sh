@@ -92,34 +92,34 @@ function main() {
 
   # Parse options
   while [[ $# -ge $OPTIND ]] && eval opt=\${$OPTIND} || break
-        [[ $opt == -- ]] && shift && break
-        if [[ $opt == --?* ]]; then
-          opt=${opt#--}; shift
+    [[ $opt == -- ]] && shift && break
+    if [[ $opt == --?* ]]; then
+      opt=${opt#--}; shift
 
-          # Argument to option ?
-          OPTARG=;local has_arg=0
-          [[ $opt == *=* ]] && OPTARG=${opt#*=} && opt=${opt%=$OPTARG} && has_arg=1
+      # Argument to option ?
+      OPTARG=;local has_arg=0
+      [[ $opt == *=* ]] && OPTARG=${opt#*=} && opt=${opt%=$OPTARG} && has_arg=1
 
-          # Check if known option and if it has an argument if it must:
-          local state=0
-          for option in "${LONG_OPTS[@]}"; do
-            [[ "$option" == "$opt" ]] && state=1 && break
-            [[ "${option%:}" == "$opt" ]] && state=2 && break
-          done
-          # Param not found
-          [[ $state = 0 ]] && OPTARG=$opt && opt='?'
-          # Param with no args, has args
-          [[ $state = 1 && $has_arg = 1 ]] && OPTARG=$opt && opt=::
-          # Param with args, has no args
-          if [[ $state = 2 && $has_arg = 0 ]]; then
-            [[ $# -ge $OPTIND ]] && eval OPTARG=\${$OPTIND} && shift || { OPTARG=$opt; opt=:; }
-          fi
+      # Check if known option and if it has an argument if it must:
+      local state=0
+      for option in "${LONG_OPTS[@]}"; do
+        [[ "$option" == "$opt" ]] && state=1 && break
+        [[ "${option%:}" == "$opt" ]] && state=2 && break
+      done
+      # Param not found
+      [[ $state = 0 ]] && OPTARG=$opt && opt='?'
+      # Param with no args, has args
+      [[ $state = 1 && $has_arg = 1 ]] && OPTARG=$opt && opt=::
+      # Param with args, has no args
+      if [[ $state = 2 && $has_arg = 0 ]]; then
+        [[ $# -ge $OPTIND ]] && eval OPTARG=\${$OPTIND} && shift || { OPTARG=$opt; opt=:; }
+      fi
 
-          # for the while
-          true
-        else
-          getopts ":$SHORT_OPTS" opt
-        fi
+      # for the while
+      true
+    else
+      getopts ":$SHORT_OPTS" opt
+    fi
   do
     case "$opt" in
       # List of options
@@ -127,10 +127,10 @@ function main() {
       h|help)       help_command ;;
       force)        FORCE=true ;;
       # Errors
-      ::)	err "Unexpected argument to option '$OPTARG'"; exit 2; ;;
-      :)	err "Missing argument to option '$OPTARG'"; exit 2; ;;
-      \?)	err "Unknown option '$OPTARG'"; exit 2; ;;
-      *)	err "Internal script error, unmatched option '$opt'"; exit 2; ;;
+      ::)	fatal "Unexpected argument to option '$OPTARG'"; ;;
+      :)	fatal "Missing argument to option '$OPTARG'"; ;;
+      \?)	fatal "Unknown option '$OPTARG'"; ;;
+      *)	fatal "Internal script error, unmatched option '$opt'"; ;;
     esac
   done
   readonly FORCE
@@ -152,7 +152,7 @@ function main() {
     version)  version_command ;;
 
     # Unknown command
-    *)  err "Unknown command '$command'"; exit 2; ;;
+    *)  fatal "Unknown command '$command'"; ;;
   esac
 }
 #######################################
