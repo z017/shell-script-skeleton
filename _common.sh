@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 #
-# Common utilities for scripts
+# Common script configurations and utilities
+# This should only be sourced, not executed directly
+#
 # Copyright (c) {{ YEAR }} - {{ AUTHOR }} <{{ AUTHOR_EMAIL }}>
 #
 # Built with shell-script-skeleton v0.0.3 <http://github.com/z017/shell-script-skeleton>
@@ -90,6 +92,12 @@ function log() {
   # print log
   printf "$*\n" >&2
 }
+
+# -----------------------------------------------------------------------------
+# Ensure script is sourced
+# -----------------------------------------------------------------------------
+[[ -n "$BASH_VERSION" ]] || fatal "This file must be sourced from bash."
+[[ "$(caller 2>/dev/null | awk '{print $1}')" != "0" ]] || fatal "This file must be sourced, not executed."
 
 # -----------------------------------------------------------------------------
 # Utility functions
