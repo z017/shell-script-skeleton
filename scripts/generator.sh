@@ -5,8 +5,8 @@
 #
 # Built with shell-script-skeleton v0.0.3 <http://github.com/z017/shell-script-skeleton>
 
-# Import common utilities
-source "$(cd "$(dirname $(realpath "${BASH_SOURCE[0]}"))" && pwd)/common.sh"
+# Import common script configurations and utilities
+source "$(cd "$(dirname $(realpath "${BASH_SOURCE[0]}"))" && pwd)/_common.sh" || exit 1
 
 #######################################
 # SCRIPT CONSTANTS & VARIABLES
