@@ -3,9 +3,9 @@
 # Common script configurations and utilities
 # This should only be sourced, not executed directly
 #
-# Copyright (c) {{ YEAR }} - {{ AUTHOR }} <{{ AUTHOR_EMAIL }}>
+# http://github.com/z017/shell-script-skeleton
 #
-# Built with shell-script-skeleton v0.0.3 <http://github.com/z017/shell-script-skeleton>
+# Copyright (c) 2015 - Jeremías Longo <jeremiaslongo@gmail.com>
 
 # Bash strict mode
 set -Eeuo pipefail
