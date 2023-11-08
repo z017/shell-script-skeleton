@@ -6,11 +6,6 @@
 # Built with shell-script-skeleton v0.0.3 <http://github.com/z017/shell-script-skeleton>
 
 #######################################
-# CONSTANTS & VARIABLES
-#######################################
-readonly PROJECT_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-
-#######################################
 # FUNCTIONS
 #######################################
 

@@ -12,6 +12,8 @@ source "$(cd "$(dirname $(realpath "${BASH_SOURCE[0]}"))" && pwd)/common.sh"
 # SCRIPT CONSTANTS & VARIABLES
 #######################################
 
+readonly PROJECT_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+
 # Script version
 readonly VERSION=0.0.1
 
