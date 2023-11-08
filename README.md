@@ -32,19 +32,19 @@ $ cd shell-script-skeleton
 $ ./skeleton
 
 USAGE:
-  skeleton [options] <command>
+  skeleton.sh [options] <command>
 
-  OPTIONS:
-    --help, -h              Alias help command
-    --version, -v           Alias version command
-    --force                 Don't ask for confirmation
-    --                      Denotes the end of the options.  Arguments after this
-                            will be handled as parameters even if they start with
-                            a '-'.
+OPTIONS:
+  --help, -h              Alias help command
+  --version, -v           Alias version command
+  --force                 Don't ask for confirmation
+  --                      Denotes the end of the options.  Arguments after this
+                          will be handled as parameters even if they start with
+                          a '-'.
 
-  COMMANDS:
-    help                    Display detailed help
-    version                 Print version information.
+COMMANDS:
+  help                    Display detailed help
+  version                 Print version information.
 
 ```
 
