@@ -110,6 +110,15 @@ function fn_exists() {
     declare -F "$1" > /dev/null
 }
 
+# Ensure script is running as sudo
+# Usage: ensureSudo "$@"
+function ensureSudo() {
+    if [[ $(id -u) -ne 0 ]]; then
+        info "script require root privileges, trying sudo"
+        exec sudo --preserve-env $0 $@
+    fi
+}
+
 # Shows an error if required tools are not installed.
 function required {
   local e=0
