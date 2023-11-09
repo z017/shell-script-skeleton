@@ -88,7 +88,7 @@ function default_command() {
 #######################################
 function main() {
   # Required tools
-  required $REQUIRED_TOOLS
+  required ${REQUIRED_TOOLS-}
 
   # Parse options
   while [[ $# -ge $OPTIND ]] && eval opt=\${$OPTIND} || break
@@ -137,7 +137,10 @@ function main() {
   shift $((OPTIND-1))
 
   # No more arguments -> call default command
-  [[ -z "$1" ]] && default_command
+  if [[ $# -lt 1 ]]; then
+    default_command
+    exit
+  fi
 
   # Set command and arguments
   command="$1" && shift
