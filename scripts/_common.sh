@@ -177,7 +177,8 @@ trap error_trap ERR
 
 # Shutdown trap
 function shutdown_trap() {
-    info "\ninterruption received, shutting down"
+    printf "\n" >&2
+    info "interruption received, shutting down"
     trap '' ERR
     # if on_shutdown function exists, execute it
     fn_exists on_shutdown && on_shutdown
