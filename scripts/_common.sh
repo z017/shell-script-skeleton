@@ -95,6 +95,15 @@ function log() {
   printf -- "$*\n" >&2
 }
 
+# log_key key value
+# Print to stdout a formatted key value for logs only if value is not an empty
+# string.
+# Example: info "log in successful$(log_key user $user)"
+function log_key() {
+  [[ $# -lt 2 || -z $2 ]] && return
+  printf " \033[2;39m%s=\033[0;00m%s" $1 $2
+}
+
 # -----------------------------------------------------------------------------
 # Ensure script is sourced
 # -----------------------------------------------------------------------------
@@ -171,9 +180,9 @@ function parse_templates {
 # message, for example add the next code as first line of a function:
 # local ERRTEXT="bootnode section failed"
 function error_trap() {
-  error "${ERRTEXT:-script failed}"
+  fatal "${ERRTEXT:-script failed}$(log_key code ${1-})$(log_key line ${2-})$(log_key fn ${3-})"
 }
-trap error_trap ERR
+trap 'error_trap $? ${LINENO-} ${FUNCNAME-}' ERR
 
 # Shutdown trap
 function shutdown_trap() {
