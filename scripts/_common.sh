@@ -107,16 +107,16 @@ function log() {
 
 # Check if function exists
 function fn_exists() {
-    declare -F "$1" > /dev/null
+  declare -F "$1" > /dev/null
 }
 
 # Ensure script is running as sudo
 # Usage: ensureSudo "$@"
 function ensureSudo() {
-    if [[ $(id -u) -ne 0 ]]; then
-        info "script require root privileges, trying sudo"
-        exec sudo --preserve-env $0 $@
-    fi
+  if [[ $(id -u) -ne 0 ]]; then
+    info "script require root privileges, trying sudo"
+    exec sudo --preserve-env $0 $@
+  fi
 }
 
 # Shows an error if required tools are not installed.
@@ -171,24 +171,24 @@ function parse_templates {
 # message, for example add the next code as first line of a function:
 # local ERRTEXT="bootnode section failed"
 function error_trap() {
-    error "${ERRTEXT:-script failed}"
+  error "${ERRTEXT:-script failed}"
 }
 trap error_trap ERR
 
 # Shutdown trap
 function shutdown_trap() {
-    printf "\n" >&2
-    info "interruption received, shutting down"
-    trap '' ERR
-    # if on_shutdown function exists, execute it
-    fn_exists on_shutdown && on_shutdown
+  printf "\n" >&2
+  info "interruption received, shutting down"
+  trap '' ERR
+  # if on_shutdown function exists, execute it
+  fn_exists on_shutdown && on_shutdown
 }
 trap shutdown_trap SIGINT SIGTERM
 
 # Exit trap
 function exit_trap() {
-    # if on_exit function exists, execute it
-    fn_exists on_exit && on_exit
-    exit
+  # if on_exit function exists, execute it
+  fn_exists on_exit && on_exit
+  exit
 }
 trap exit_trap EXIT
