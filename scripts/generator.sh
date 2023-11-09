@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 #
-# Generic Shell Script Skeleton.
-# Copyright (c) {{ YEAR }} - {{ AUTHOR }} <{{ AUTHOR_EMAIL }}>
+# Shell script skeleton generator
+# http://github.com/z017/shell-script-skeleton
 #
-# Built with shell-script-skeleton v0.0.3 <http://github.com/z017/shell-script-skeleton>
+# Copyright (c) 2015 - Jeremías Longo <jeremiaslongo@gmail.com>
 
 # Import common script configurations and utilities
 source "$(cd "$(dirname $(realpath "${BASH_SOURCE[0]}"))" && pwd)/_common.sh" || exit 1
@@ -15,7 +15,7 @@ source "$(cd "$(dirname $(realpath "${BASH_SOURCE[0]}"))" && pwd)/_common.sh" ||
 readonly PROJECT_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 # Script version
-readonly VERSION=0.0.1
+readonly VERSION=0.1.0
 
 # List of required tools, example: REQUIRED_TOOLS=(git ssh)
 readonly REQUIRED_TOOLS=()
