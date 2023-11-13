@@ -190,6 +190,129 @@ function parse_templates {
   done
 }
 
+# Parse the arguments and executes:
+# - on_option with the short or long option found, OPTARG contains the option
+#   argument if defined. The valid options must be declared in LONG_OPTS and
+#   SHORT_OPTS with a : (colon) after the proper option to expect an
+#   argument.
+# - on_command with the command found and the command arguments. The valid
+#   commands must be defined in COMMANDS.
+# - before_commands is called with the arguments found before executing
+#   on_command. It can be used to set script variables modified by options to
+#   readonly.
+function parse_arguments() {
+  local cmd='--' # default command
+  local args=()
+  local OPT
+  while get_options $@; do
+    if [[ $OPT == -- ]]; then
+      if [[ $cmd == -- ]]; then
+        # the first found argument could be a command
+        cmd=$OPTARG
+      else
+        # option is an argument
+        args+=($OPTARG)
+      fi
+      continue
+    fi
+    # verify errors
+    case "$OPT" in
+        ::)	fatal "Unexpected argument to option '$OPTARG'"; ;;
+        :)	fatal "Missing argument to option '$OPTARG'"; ;;
+        \?)	fatal "Unknown option '$OPTARG'"; ;;
+    esac
+    [[ "${OPTARG-}" =~ ^-[A-Za-z-]+ ]] && fatal "Missing argument to option '$OPT'"
+    # call on_option if exists
+    fn_exists on_option && on_option $OPT
+  done
+  shift $((OPTIND-1))
+  args+=(${@})
+  # call before_commands if exists
+  fn_exists before_commands && before_commands "$cmd" "${args[@]}"
+  # call on_command if exists
+  if ! fn_exists on_command; then
+    return
+  fi
+  if [[ $cmd == -- ]]; then
+    # execute default command
+    on_command -- ${args[@]}
+    return
+  fi
+  for valid_cmd in "${COMMANDS[@]}"; do
+    if [[ "$valid_cmd" == "$cmd" ]]; then
+      # execute a valid command
+      on_command $cmd ${args[@]}
+      return
+    fi
+  done
+  # command invalid will be considered as argument, execute default command
+  on_command -- $cmd ${args[@]}
+}
+
+# Internal function used by parse_arguments to parse short and long options
+# from arguments.
+# Support options between commands or command arguments.
+# All params after '--' are considered command arguments.
+function get_options() {
+  if [[ $# -lt $OPTIND ]]; then
+    # no more params
+    return 1
+  fi
+  OPT="${!OPTIND}"
+  if [[ $OPT == -- ]]; then
+    # only arguments left
+    OPTIND=$((OPTIND+1))
+    return 1
+  elif [[ $OPT == --?* ]]; then
+    # long option
+    OPT=${OPT#--}
+    OPTIND=$((OPTIND+1))
+    OPTARG=
+    local has_arg=0
+    if [[ $OPT == *=* ]]; then
+      # option has an argument
+      OPTARG=${OPT#*=}
+      OPT=${OPT%=$OPTARG}
+      has_arg=1
+    fi
+    # check if option is valid
+    local state=0
+    for valid_option in "${LONG_OPTS[@]}"; do
+      [[ "$valid_option" == "$OPT" ]] && state=1 && break
+      [[ "${valid_option%:}" == "$OPT" ]] && state=2 && break
+    done
+    if [[ $state = 0 ]]; then
+      # unknown option
+      OPTARG=$OPT
+      OPT='?'
+    elif [[ $state = 1 && $has_arg = 1 ]]; then
+      # unexpected argument to option
+      OPTARG=$OPT
+      OPT='::'
+    elif [[ $state = 2 && $has_arg = 0 ]]; then
+      if [[ $# -ge $OPTIND ]]; then
+        # next param is the option argument
+        OPTARG="${!OPTIND}"
+        OPTIND=$((OPTIND+1))
+      else
+        # missing argument to option
+        OPTARG=$OPT
+        OPT=':'
+      fi
+    fi
+    return 0
+  elif [[ $OPT == -?* ]]; then
+    # short option
+    getopts ":$SHORT_OPTS" OPT
+  else
+    # command or argument
+    OPTARG=$OPT
+    OPT='--'
+    OPTIND=$((OPTIND+1))
+    return 0
+  fi
+}
+
 # -----------------------------------------------------------------------------
 # Traps
 # -----------------------------------------------------------------------------
