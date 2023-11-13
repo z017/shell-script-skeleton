@@ -190,29 +190,26 @@ function parse_templates {
   done
 }
 
-# Parse the arguments and executes:
+# Parse the arguments and executes the following functions:
 # - on_option with the short or long option found, OPTARG contains the option
 #   argument if defined. The valid options must be declared in LONG_OPTS and
 #   SHORT_OPTS with a : (colon) after the proper option to expect an
 #   argument.
-# - on_command with the command found and the command arguments. The valid
-#   commands must be defined in COMMANDS.
-# - before_commands is called with the arguments found before executing
-#   on_command. It can be used to set script variables modified by options to
-#   readonly.
-function parse_arguments() {
-  local cmd='--' # default command
+# - before_execute with the arguments, before calling execute_command. It can
+#   be used to set script variables modified by options to readonly.
+# - execute_command with the arguments.
+# If a list of valid commands are defined in COMMANDS the first argument is
+# the command to be executed or '--' by default.
+function parse_and_execute() {
+  local only_args=1 # 1 is true, 0 is false
   local args=()
   local OPT
   while get_options $@; do
     if [[ $OPT == -- ]]; then
-      if [[ $cmd == -- ]]; then
-        # the first found argument could be a command
-        cmd=$OPTARG
-      else
-        # option is an argument
-        args+=($OPTARG)
-      fi
+      # add param to accumulated arguments
+      args+=($OPTARG)
+      # the first argument could be a command
+      only_args=0
       continue
     fi
     # verify errors
@@ -226,27 +223,40 @@ function parse_arguments() {
     fn_exists on_option && on_option $OPT
   done
   shift $((OPTIND-1))
+
+  # the remaining params are arguments
   args+=(${@})
-  # call before_commands if exists
-  fn_exists before_commands && before_commands "$cmd" "${args[@]}"
-  # call on_command if exists
-  if ! fn_exists on_command; then
-    return
+
+  local send_command=1
+  if [[ "${#COMMANDS[@]}" == 0 ]]; then
+    # if valid commands are not defined, the first argument is not a command
+    send_command=0
+    only_args=1
   fi
-  if [[ $cmd == -- ]]; then
-    # execute default command
-    on_command -- ${args[@]}
-    return
+
+  if [[ "$only_args" == 0 ]]; then
+    # check if the first argument is a valid command
+    only_args=1
+    for valid_cmd in "${COMMANDS[@]}"; do
+      if [[ "$valid_cmd" == "${args[0]}" ]]; then
+        # the first argument is a command
+        only_args=0
+        break
+      fi
+    done
+
   fi
-  for valid_cmd in "${COMMANDS[@]}"; do
-    if [[ "$valid_cmd" == "$cmd" ]]; then
-      # execute a valid command
-      on_command $cmd ${args[@]}
-      return
-    fi
-  done
-  # command invalid will be considered as argument, execute default command
-  on_command -- $cmd ${args[@]}
+
+  if [[ "$only_args" == 1 && "$send_command" == 1 ]]; then
+    # send '--' as the default command
+    args=('--' ${args[@]})
+  fi
+
+  # call before_execute if exists
+  fn_exists before_execute && before_execute "${args[@]}"
+
+  # call execute_command if exists
+  fn_exists execute_command && execute_command "${args[@]}"
 }
 
 # Internal function used by parse_arguments to parse short and long options
