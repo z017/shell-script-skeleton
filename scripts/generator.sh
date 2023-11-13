@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 #
-# Shell Script Skeleton Generator
+# Shell script skeleton generator
+# http://github.com/z017/shell-script-skeleton
+#
 # Copyright (c) 2015 - Jeremías Longo <jeremiaslongo@gmail.com>
 
 # Import common script configurations and utilities
@@ -8,15 +10,30 @@ source "$(cd "$(dirname $(realpath "${BASH_SOURCE[0]}"))" && pwd)/_common.sh" ||
 
 readonly SCRIPT_NAME=${0##*/}
 readonly SCRIPT_VERSION=0.0.1
-readonly SCRIPT_DESCRIPTION="Shell Script Skeleton Generator"
+readonly SCRIPT_DESCRIPTION="Shell script skeleton generator"
 
 readonly SCRIPTS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 readonly PROJECT_ROOT=$(dirname "${SCRIPTS_DIR}")
 
+<<<<<<< HEAD
 # -----------------------------------------------------------------------------
 # Options
 # -----------------------------------------------------------------------------
 readonly LONG_OPTS=(help version log-level:)
+=======
+# Script version
+readonly VERSION=0.1.0
+
+# List of required tools, example: REQUIRED_TOOLS=(git ssh)
+readonly REQUIRED_TOOLS=()
+
+# Long Options. To expect an argument for an option, just place a : (colon)
+# after the proper option flag.
+readonly LONG_OPTS=(help version force)
+
+# Short Options. To expect an argument for an option, just place a : (colon)
+# after the proper option flag.
+>>>>>>> 58802cae5cb911495d15ef4ddbfb68ad98164f32
 readonly SHORT_OPTS=hv
 
 function on_option() {
