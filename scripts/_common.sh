@@ -324,6 +324,60 @@ function get_options() {
   fi
 }
 
+# Help command
+# Prints a default help message.
+# Define the function help_message to customize.
+function execute_help() {
+  if fn_exists help_message; then
+    help_message
+    exit 0
+  fi
+
+  if [[ "${SCRIPT_DESCRIPTION-}" ]]; then
+    # description
+    printf "\n  %s\n" "${SCRIPT_DESCRIPTION}"
+  fi
+  # usage
+  printf "\nUsage:\n  %s " ${SCRIPT_NAME-0##*/}
+  local so=${SHORT_OPTS-}
+  local lo=${LONG_OPTS-}
+  local c=${COMMANDS-}
+  [[ "${#so}" > 0 || "${#lo}" > 0 ]] && printf "[options] "
+  [[ "${#c}" > 0 ]] && printf "[command] "
+  printf "[args]\n\n"
+  # commands
+  if [[ "${#c}" > 0 ]]; then
+    printf "Available Commands:\n"
+    for cmd in "${COMMANDS[@]}"; do
+      printf "  %s\n" "$cmd"
+    done
+    printf "\n"
+  fi
+  # long options
+  if [[ "${#lo}" > 0 ]]; then
+    printf "Long Options:\n"
+    for opt in "${LONG_OPTS[@]}"; do
+      local has_arg=""
+      [[ $opt =~ [:]$ ]] && has_arg=" arg" && opt=${opt%:}
+      printf "  --%s%s\n" "$opt" "$has_arg"
+    done
+    printf "\n"
+  fi
+  # short options
+  if [[ "${#so}" > 0 ]]; then
+    printf "Short Options:\n"
+    for ((i = 0; i < ${#so}; i++)); do
+      local opt=${so:$i:1}
+      local next=$((i+1))
+      local has_arg=""
+      [[ $next < ${#so} && ${so:$next:1} == ":" ]] && has_arg=" arg" && i=$next
+      printf "  -%s%s\n" "$opt" "$has_arg"
+    done
+    printf "\n"
+  fi
+  exit 0
+}
+
 # Version command
 # Prints a default version message using SCRIPT_NAME and SCRIPT_VERSION to
 # stdout.
