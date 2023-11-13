@@ -303,7 +303,7 @@ function get_options() {
     return 0
   elif [[ $OPT == -?* ]]; then
     # short option
-    getopts ":$SHORT_OPTS" OPT
+    getopts ":${SHORT_OPTS-}" OPT
   else
     # command or argument
     OPTARG=$OPT
