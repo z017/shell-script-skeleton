@@ -1,164 +1,79 @@
 #!/usr/bin/env bash
 #
-# Generic Shell Script Skeleton.
-# Copyright (c) {{ YEAR }} - {{ AUTHOR }} <{{ AUTHOR_EMAIL }}>
-#
-# Built with shell-script-skeleton v0.0.3 <http://github.com/z017/shell-script-skeleton>
+# Shell Script Skeleton Generator
+# Copyright (c) 2015 - Jeremías Longo <jeremiaslongo@gmail.com>
 
 # Import common script configurations and utilities
 source "$(cd "$(dirname $(realpath "${BASH_SOURCE[0]}"))" && pwd)/_common.sh" || exit 1
 
-#######################################
-# SCRIPT CONSTANTS & VARIABLES
-#######################################
+readonly SCRIPT_NAME=${0##*/}
+readonly SCRIPT_VERSION=0.0.1
+readonly SCRIPT_DESCRIPTION="Shell Script Skeleton Generator"
 
-readonly PROJECT_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+readonly SCRIPTS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+readonly PROJECT_ROOT=$(dirname "${SCRIPTS_DIR}")
 
-# Script version
-readonly VERSION=0.0.1
-
-# List of required tools, example: REQUIRED_TOOLS=(git ssh)
-readonly REQUIRED_TOOLS=()
-
-# Long Options. To expect an argument for an option, just place a : (colon)
-# after the proper option flag.
-readonly LONG_OPTS=(help version force)
-
-# Short Options. To expect an argument for an option, just place a : (colon)
-# after the proper option flag.
+# -----------------------------------------------------------------------------
+# Options
+# -----------------------------------------------------------------------------
+readonly LONG_OPTS=(help version log-level:)
 readonly SHORT_OPTS=hv
 
-# Script name
-readonly SCRIPT_NAME=${0##*/}
+function on_option() {
+  case "$1" in
+    h|help)       execute_help ;;
+    v|version)    execute_version ;;
+    log-level)    log_level $OPTARG ;;
+    *)            fatal "Internal script error, unmatched option '$1'" ;;
+  esac
+}
 
-# Force flag
-declare FORCE=false
+# -----------------------------------------------------------------------------
+# Commands
+# -----------------------------------------------------------------------------
+readonly COMMANDS=(help version generate)
 
-#######################################
-# SCRIPT CONFIGURATION CONSTANTS
-#######################################
+function execute_command() {
+  local cmd="$1"
+  shift
+  case "$cmd" in
+    help)     execute_help ;;
+    version)  execute_version ;;
+    generate) execute_generate "$@" ;;
+    *)        execute_help ;;
+  esac
+}
 
-# Put here configuration constants
+function execute_generate() {
+  fatal "TODO generate"
+}
 
+function help_message() {
+  cat <<END
 
-#######################################
-# help command
-#######################################
-function help_command() {
-  cat <<END;
+  $SCRIPT_DESCRIPTION
 
-USAGE:
-  $SCRIPT_NAME [options] <command>
+Usage:
+  $SCRIPT_NAME [options] [command] [args]
 
-OPTIONS:
-  --help, -h              Alias help command
-  --version, -v           Alias version command
-  --force                 Don't ask for confirmation
+Available Commands:
+  generate                Generate a shell script skeleton from templates.
+  help                    Display detailed help.
+  version                 Print version information.
+
+Options:
+  --help, -h              Alias help command.
+  --version, -v           Alias version command.
+  --log-level lvl         Set the log level severity. Lower level will be
+                          ignored. Must be an integer or a level name:
+                          ${SEVERITY_RANGES_NAMES[@]}
   --                      Denotes the end of the options.  Arguments after this
                           will be handled as parameters even if they start with
                           a '-'.
-
-COMMANDS:
-  help                    Display detailed help
-  version                 Print version information.
-
 END
-  exit 1
 }
 
-#######################################
-# version command
-#######################################
-function version_command() {
-  echo "$SCRIPT_NAME version $VERSION"
-}
-
-#######################################
-# default command
-#######################################
-function default_command() {
-  # set default command here
-  help_command
-}
-
-#######################################
-#
-# MAIN
-#
-#######################################
-function main() {
-  # Required tools
-  required ${REQUIRED_TOOLS-}
-
-  # Parse options
-  while [[ $# -ge $OPTIND ]] && eval opt=\${$OPTIND} || break
-    [[ $opt == -- ]] && shift && break
-    if [[ $opt == --?* ]]; then
-      opt=${opt#--}; shift
-
-      # Argument to option ?
-      OPTARG=;local has_arg=0
-      [[ $opt == *=* ]] && OPTARG=${opt#*=} && opt=${opt%=$OPTARG} && has_arg=1
-
-      # Check if known option and if it has an argument if it must:
-      local state=0
-      for option in "${LONG_OPTS[@]}"; do
-        [[ "$option" == "$opt" ]] && state=1 && break
-        [[ "${option%:}" == "$opt" ]] && state=2 && break
-      done
-      # Param not found
-      [[ $state = 0 ]] && OPTARG=$opt && opt='?'
-      # Param with no args, has args
-      [[ $state = 1 && $has_arg = 1 ]] && OPTARG=$opt && opt=::
-      # Param with args, has no args
-      if [[ $state = 2 && $has_arg = 0 ]]; then
-        [[ $# -ge $OPTIND ]] && eval OPTARG=\${$OPTIND} && shift || { OPTARG=$opt; opt=:; }
-      fi
-
-      # for the while
-      true
-    else
-      getopts ":$SHORT_OPTS" opt
-    fi
-  do
-    case "$opt" in
-      # List of options
-      v|version)    version_command; exit 0; ;;
-      h|help)       help_command ;;
-      force)        FORCE=true ;;
-      # Errors
-      ::)	fatal "Unexpected argument to option '$OPTARG'"; ;;
-      :)	fatal "Missing argument to option '$OPTARG'"; ;;
-      \?)	fatal "Unknown option '$OPTARG'"; ;;
-      *)	fatal "Internal script error, unmatched option '$opt'"; ;;
-    esac
-  done
-  readonly FORCE
-  shift $((OPTIND-1))
-
-  # No more arguments -> call default command
-  if [[ $# -lt 1 ]]; then
-    default_command
-    exit
-  fi
-
-  # Set command and arguments
-  command="$1" && shift
-  args="$@"
-
-  # Execute the command
-  case "$command" in
-    # help
-    help)     help_command ;;
-
-    # version
-    version)  version_command ;;
-
-    # Unknown command
-    *)  fatal "Unknown command '$command'"; ;;
-  esac
-}
-#######################################
+# -----------------------------------------------------------------------------
 # Run the script
-#######################################
-main "$@"
+# -----------------------------------------------------------------------------
+parse_and_execute "$@"
