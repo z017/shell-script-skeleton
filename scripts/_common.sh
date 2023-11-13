@@ -25,6 +25,9 @@ readonly SEVERITY_RANGES_SHORTNAMES=(TRC DBG INF WRN ERR FTL)
 readonly SEVERITY_RANGES_COLORS=(62 63 86 192 204 134)
 
 declare -i LOG_LEVEL=${LOG_LEVEL-0}
+
+# Set log level and make it readonly
+# Usage: log_level level_number|level_name
 function log_level() {
   local level=${1-$LOG_LEVEL}
   if [[ "$level" =~ ^[-]?[0-9]+$ ]]; then
@@ -59,17 +62,17 @@ function debug() {
 
 # Log info messages to stderr
 function info() {
-  log  0 "$*"
+  log 0 "$*"
 }
 
 # Log warning messages to stderr
 function warn() {
-  log  4 "$*"
+  log 4 "$*"
 }
 
 # Log error messages to stderr
 function error() {
-  log  8 "$*"
+  log 8 "$*"
 }
 
 # Log fatal messages to stderr and exit with status 1
