@@ -26,7 +26,24 @@ readonly SEVERITY_RANGES_COLORS=(62 63 86 192 204 134)
 
 declare -i LOG_LEVEL=${LOG_LEVEL-0}
 function log_level() {
-  LOG_LEVEL=$1
+  local level=${1-$LOG_LEVEL}
+  if [[ "$level" =~ ^[-]?[0-9]+$ ]]; then
+    # level is a number
+    LOG_LEVEL=$level
+  else
+    # level is a range name
+    level=$(echo $level | tr "A-Z" "a-z")
+    local found=0
+    for i in "${!SEVERITY_RANGES_NAMES[@]}"; do
+      if [[ "${SEVERITY_RANGES_NAMES[$i]}" == "$level" ]]; then
+        level="${SEVERITY_RANGES[$i]}"
+        found=1
+        break
+      fi
+    done
+    [[ "$found" == 0 ]] && fatal "invalid log level '$level', must be one of: ${SEVERITY_RANGES_NAMES[@]}"
+    LOG_LEVEL=$level
+  fi
   readonly LOG_LEVEL
 }
 
