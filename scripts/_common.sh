@@ -229,7 +229,7 @@ function parse_and_execute() {
   args+=(${@})
 
   local send_command=1
-  if [[ "${#COMMANDS[@]}" == 0 ]]; then
+  if [[ -z "${COMMANDS-}" || "${#COMMANDS[@]}" == 0 ]]; then
     # if valid commands are not defined, the first argument is not a command
     send_command=0
     only_args=1
