@@ -88,7 +88,7 @@ function log() {
   local severity_level=$1
   shift
   # if severity level is lower than log level, messages are discarded
-  [[ $severity_level -lt $LOG_LEVEL ]] && return
+  [[ $severity_level -lt $LOG_LEVEL ]] && return 0
 
   if [[ $LOG_INCLUDE_TIME -ne 0 ]]; then
     # print time with defined format
@@ -121,7 +121,7 @@ function log() {
 # string.
 # Example: info "log in successful$(log_key user $user)"
 function log_key() {
-  [[ $# -lt 2 || -z $2 ]] && return
+  [[ $# -lt 2 || -z $2 ]] && return 0
   printf " \033[2;39m%s=\033[0;00m%s" $1 $2
 }
 
