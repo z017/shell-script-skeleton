@@ -160,20 +160,41 @@ function required {
   [[ $e < 1 ]] || fatal "please install missing tools required for running this script and try again"
 }
 
-# Parse template file variables in the format "{{ VAR }}" with the "VAR" value.
-# parse_template <input file template> <output file> <string of variables>
+# Parse template file variables in the format "{{ VAR }}" with the value of "VAR".
+# parse_template <input file template> <output file or directory>
 function parse_template {
-  local e=0
-  [[ ! -f "$1" ]] && error "$1 is not a valid file." && e=1
-  [[ $2 != ${2%/*} ]] && mkdir -p ${2%/*}
-  [[ -z $3 ]] && error "$3, must be an string of variables to replace" && e=1
-  [[ $e > 0 ]] && fatal "usage: parse_template <input file template> <output file> <string of variables>"
-  # parse file
-  local args
-  for v in $3; do
-    args="${args}s~{{ $v }}~${!v}~g;"
+  [[ $# -lt 2 ]] && error "parse_template requires input and output" && return 1
+  # parse input param
+  local input=$1
+  [[ ! -f "$input" ]] && error "input must be a file$(log_key input $input)" && return 1
+  local filename="${input##*/}"
+  # parse output param
+  local output=$2
+  [[ "$output" != "${output%/*}" ]] && mkdir -p "${output%/*}"
+  [[ "$output" == */ ]] && output="${output%/}"
+  [[ -d "$output" ]] && output="$output/$filename"
+  # get template variables
+  local -A vars=()
+  while read -r line; do
+    while [[ "$line" =~ \{\{[[:blank:]]*([a-zA-Z_][a-zA-Z_0-9]*)[[:blank:]]*\}\} ]]; do
+      [[ ! -v vars[${BASH_REMATCH[1]}] ]] && vars[${BASH_REMATCH[1]}]=
+      line="${line#*"${BASH_REMATCH[0]}"}"
+    done
+  done < $input
+  # check if variables are defined and prepare sed arguments
+  local has_error=0
+  local sed_args=""
+  for v in "${!vars[@]}"; do
+    if [[ -z "${!v:-}" ]]; then
+      error "template variable is undefined$(log_key var $v)$(log_key tpl $filename)"
+      has_error=1
+    else
+      sed_args="${sed_args}s~{{ *$v *}}~${!v}~g;"
+    fi
   done
-  sed "$args" < $1 > $2
+  [[ "$has_error" == 1 ]] && return 1
+  # generate output from input replacing variables
+  sed "$sed_args" < $input > $output
 }
 
 # Parse all template files ".tpl" in the input_dir and saved them to output_dir
