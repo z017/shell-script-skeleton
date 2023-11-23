@@ -197,18 +197,22 @@ function parse_template {
   sed "$sed_args" < $input > $output
 }
 
-# Parse all template files ".tpl" in the input_dir and saved them to output_dir
-# parse_templates <input_dir> <output_dir> <string of variables>
+# Parse all template files with a .tpl in the name from the input_dir and saved
+# them to the output_dir removing the ".tpl".
+# parse_templates <input_dir> <output_dir>
 function parse_templates {
-  local e=0
-  [[ ! -d $1 ]] && error "$1 is not a valid directory." && e=1
-  [[ -z $3 ]] && error "$3, must be an string of variables to replace" && e=1
-  [[ $e > 0 ]] && fatal "usage: parse_templates <input_dir> <output_dir> <string of variables>"
-  # parse each file
-  for file in "$1"/*.tpl*; do
+  [[ $# -lt 2 ]] && error "parse_templates requires input_dir and output_dir" && return 1
+  # parse input param
+  local input="${1%/}"
+  [[ ! -d "$input" ]] && error "input must be a directory$(log_key input $input)" && return 1
+  # parse output param
+  local output="${2%/}"
+  [[ ! -d "$output" ]] && error "output must be a directory$(log_key output $output)" && return 1
+  # parse each template
+  for file in "$input"/*.tpl*; do
     local filename=${file##*/}
     local outfile=${filename%.tpl*}${filename##*.tpl}
-    parse_template $file $2/$outfile "$3"
+    parse_template $file $output/$outfile
   done
 }
 
