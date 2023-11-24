@@ -138,6 +138,18 @@ function log_key() {
 # Utility functions
 # -----------------------------------------------------------------------------
 
+# Load environment from file
+function load_environment() {
+  [[ $# -lt 1 ]] && error "load_environment requires env file" && return 1
+  # parse env file param
+  local env_file=$1
+  [[ ! -f "$env_file" ]] && error "env must be a file$(log_key env $env_file)" && return 1
+  # parse env
+  set -a;
+  source "$env_file";
+  set +a;
+}
+
 # Check if function exists
 function fn_exists() {
   declare -F "$1" > /dev/null
