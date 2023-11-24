@@ -215,8 +215,9 @@ function parse_templates {
   local output="${2%/}"
   [[ ! -d "$output" ]] && error "output must be a directory$(log_key output $output)" && return 1
   # parse each template
-  for file in "$input"/*.tpl*; do
+  for file in "$input/"*.tpl*; do
     local filename=${file##*/}
+    [[ $filename == '*.tpl*' ]] && debug "no templates ".tpl" found$(log_key input $input)" && return 0
     local outfile=${filename%.tpl*}${filename##*.tpl}
     parse_template $file $output/$outfile
   done
