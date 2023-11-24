@@ -233,6 +233,8 @@ function parse_templates {
 }
 
 # Parse the arguments and executes the following functions:
+# - on_init with the raw script arguments, before parsing the options. It can
+#   be used to load environment.
 # - on_option with the short or long option found, OPTARG contains the option
 #   argument if defined. The valid options must be declared in LONG_OPTS and
 #   SHORT_OPTS with a : (colon) after the proper option to expect an
@@ -243,6 +245,9 @@ function parse_templates {
 # If a list of valid commands are defined in COMMANDS the first argument is
 # the command to be executed or '--' by default.
 function parse_and_execute() {
+  # call on_init if exists
+  fn_exists on_init && on_init "$@"
+
   local only_args=1 # 1 is true, 0 is false
   local args=()
   local OPT
