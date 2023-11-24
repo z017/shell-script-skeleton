@@ -22,19 +22,19 @@ if [[ -f "$PROJECT_ROOT/.env" ]]; then set -a; source "$PROJECT_ROOT/.env"; set 
 # -----------------------------------------------------------------------------
 # Logs
 # -----------------------------------------------------------------------------
-declare -ir LOG_INCLUDE_TIME=${LOG_INCLUDE_TIME-1}
-readonly LOG_TIME_FMT=${LOG_TIME_FMT-"%Y/%m/%d %H:%M:%S"}
+declare -i LOG_INCLUDE_TIME=${LOG_INCLUDE_TIME-1}
+declare LOG_TIME_FMT=${LOG_TIME_FMT-"%Y/%m/%d %H:%M:%S"}
 
-declare -ir LOG_INCLUDE_SEVERITY=${LOG_INCLUDE_SEVERITY-1}
+declare -i LOG_INCLUDE_SEVERITY=${LOG_INCLUDE_SEVERITY-1}
+declare LOG_LEVEL=${LOG_LEVEL-0}
+
 readonly SEVERITY_RANGES=(-8 -4 0 4 8 12)
 readonly SEVERITY_RANGES_NAMES=(trace debug info warn error fatal)
 readonly SEVERITY_RANGES_SHORTNAMES=(TRC DBG INF WRN ERR FTL)
 readonly SEVERITY_RANGES_COLORS=(62 63 86 192 204 134)
 
-declare -i LOG_LEVEL=${LOG_LEVEL-0}
-
-# Set log level and make it readonly
-# Usage: log_level level_number|level_name
+# Set log level using the severity name or number
+# Usage: log_level severity_number|severity_name
 function log_level() {
   local level=${1-$LOG_LEVEL}
   if [[ "$level" =~ ^[-]?[0-9]+$ ]]; then
@@ -54,8 +54,11 @@ function log_level() {
     [[ "$found" == 0 ]] && fatal "invalid log level '$level', must be one of: ${SEVERITY_RANGES_NAMES[@]}"
     LOG_LEVEL=$level
   fi
-  readonly LOG_LEVEL
 }
+
+# Run once to ensure LOG_LEVEL is a number.
+# If LOG_LEVEL is a severity name, use the associated severity number.
+log_level "$LOG_LEVEL"
 
 # Log trace messages to stderr
 function trace() {
@@ -287,6 +290,10 @@ function parse_and_execute() {
 
   # call before_execute if exists
   fn_exists before_execute && before_execute "${args[@]}"
+
+  # ensure log level is a number and make globals readonly
+  log_level $LOG_LEVEL
+  readonly LOG_TIME_FMT LOG_INCLUDE_TIME LOG_INCLUDE_SEVERITY LOG_LEVEL
 
   # call execute_command if exists
   fn_exists execute_command && execute_command "${args[@]}"
