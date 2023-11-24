@@ -13,12 +13,6 @@ set -Eeuo pipefail
 readonly SHELL_SCRIPT_SKELETON_VERSION=0.1.0
 readonly SHELL_SCRIPT_SKELETON_URL=http://github.com/z017/shell-script-skeleton
 
-readonly SCRIPTS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-readonly PROJECT_ROOT=${PROJECT_ROOT-$(dirname "${SCRIPTS_DIR}")}
-
-# Load environment from file
-if [[ -f "$PROJECT_ROOT/.env" ]]; then set -a; source "$PROJECT_ROOT/.env"; set +a; fi
-
 # -----------------------------------------------------------------------------
 # Logs
 # -----------------------------------------------------------------------------
