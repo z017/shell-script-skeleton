@@ -150,6 +150,18 @@ function load_environment() {
   set +a;
 }
 
+# Load environment from file if exists
+function load_environment_if_exists() {
+  [[ $# -lt 1 ]] && error "load_environment_if_exists requires env file" && return 1
+  # parse env file param
+  local env_file=$1
+  [[ ! -f "$env_file" ]] && return 0
+  # parse env
+  set -a;
+  source "$env_file";
+  set +a;
+}
+
 # Check if function exists
 function fn_exists() {
   declare -F "$1" > /dev/null
