@@ -172,7 +172,7 @@ function fn_exists() {
 function ensureSudo() {
   if [[ $(id -u) -ne 0 ]]; then
     info "script require root privileges, trying sudo"
-    exec sudo --preserve-env $0 $@
+    exec sudo --preserve-env "$0" "$@"
   fi
 }
 
